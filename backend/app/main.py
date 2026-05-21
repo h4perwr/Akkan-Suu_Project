@@ -10,9 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from backend.app.database import engine, Base, get_db
-from backend.app import schemas
-from backend.app.config import settings
+from app.database import engine, Base, get_db
+from app import schemas
+from app.config import settings
 
 
 Base.metadata.create_all(bind=engine)
