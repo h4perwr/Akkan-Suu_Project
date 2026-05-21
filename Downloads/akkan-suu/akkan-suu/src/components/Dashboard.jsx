@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { supabase } from '../supabase'
 import styles from './Dashboard.module.css'
 
 const REGIONS = [
@@ -7,20 +6,21 @@ const REGIONS = [
   'Нарынская область', 'Джалал-Абадская область', 'Таласская область', 'Баткенская область'
 ]
 
-const MOCK_RESPONSE = {
-  weather: { temperature: 24, condition: 'Пасмурно, возможен дождь', humidity: 75 },
-  recommendation: {
-    should_water: false,
-    reason: 'Завтра ожидаются осадки до 5 мм, влажность почвы высокая. Поливать урожай в ближайшие 24 часа не рекомендуется, чтобы избежать загнивания корней.'
-  }
-}
 
-export default function Dashboard({ session }) {
+export default function Dashboard({ token, onLogout }) {
   const [region, setRegion] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
 
-  const handleLogout = () => supabase.auth.signOut()
+
+  const getUserEmail = () => {
+    try {
+      const payload = token.split('.')[1]
+      return JSON.parse(atob(payload)).sub
+    } catch {
+      return 'Фермер'
+    }
+  }
 
   const getRecommendation = async () => {
     if (!region) return alert('Выберите район!')
@@ -28,24 +28,32 @@ export default function Dashboard({ session }) {
     setResult(null)
 
     try {
-      const token = session.access_token
-      const response = await fetch('http://localhost:8000/api/recommendation', {
+      const response = await fetch('http://127.0.0.1:8000/api/recommendation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}` 
         },
         body: JSON.stringify({ region })
       })
-      if (!response.ok) throw new Error('Backend not ready')
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          alert('Время сессии истекло. Пожалуйста, войдите заново.')
+          onLogout()
+          return
+        }
+        throw new Error('Ошибка сервера')
+      }
+      
       const data = await response.json()
-      setResult(data)
-    } catch {
-      await new Promise(r => setTimeout(r, 2000))
-      setResult(MOCK_RESPONSE)
+      setResult(data) 
+    } catch (err) {
+      alert('Не удалось подключиться к серверу. Проверьте, запущен ли бэкенд!')
+      console.error(err)
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   return (
@@ -56,8 +64,8 @@ export default function Dashboard({ session }) {
           <span className={styles.headerTitle}>Akkan-Suu</span>
         </div>
         <div className={styles.headerRight}>
-          <span className={styles.email}>{session.user.email}</span>
-          <button className={styles.logoutBtn} onClick={handleLogout}>Выйти</button>
+          <span className={styles.email}>{getUserEmail()}</span>
+          <button className={styles.logoutBtn} onClick={onLogout}>Выйти</button>
         </div>
       </header>
 
@@ -75,14 +83,14 @@ export default function Dashboard({ session }) {
           </select>
 
           <button className={styles.btn} onClick={getRecommendation} disabled={loading}>
-            {loading ? <span className={styles.spinner}>⏳ Анализирую...</span> : '🤖 Получить совет'}
+            {loading ? <span className={styles.spinner}>⏳ Анализирую с ИИ...</span> : '🤖 Получить совет'}
           </button>
         </div>
 
-        {result && (
+        {result && result.ai_analysis && (
           <div className={styles.resultWrapper}>
             <div className={styles.weatherCard}>
-              <h3>🌤 Погода</h3>
+              <h3>🌤 Погода (Open-Meteo)</h3>
               <div className={styles.weatherGrid}>
                 <div className={styles.weatherItem}>
                   <span className={styles.weatherVal}>{result.weather.temperature}°C</span>
@@ -93,21 +101,32 @@ export default function Dashboard({ session }) {
                   <span className={styles.weatherLbl}>Влажность</span>
                 </div>
                 <div className={styles.weatherItem}>
-                  <span className={styles.weatherVal}>{result.weather.condition}</span>
-                  <span className={styles.weatherLbl}>Условия</span>
+                  <span className={styles.weatherVal}>{result.weather.rain_mm} мм</span>
+                  <span className={styles.weatherLbl}>Осадки</span>
                 </div>
               </div>
             </div>
 
-            <div className={`${styles.recCard} ${result.recommendation.should_water ? styles.water : styles.noWater}`}>
+            <div className={`${styles.recCard} ${result.ai_analysis.recommendation !== 'SKIP' ? styles.water : styles.noWater}`}>
               <div className={styles.recIcon}>
-                {result.recommendation.should_water ? '💧' : '✅'}
+                {result.ai_analysis.recommendation !== 'SKIP' ? '💧' : '✅'}
               </div>
               <div>
                 <h3 className={styles.recTitle}>
-                  {result.recommendation.should_water ? 'Полив нужен!' : 'Полив не нужен'}
+                  {result.ai_analysis.recommendation === 'SKIP' ? 'Полив можно пропустить' : 
+                   result.ai_analysis.recommendation === 'REDUCE' ? 'Сокращенный полив' : 
+                   result.ai_analysis.recommendation === 'INCREASE' ? 'Усиленный полив' : 'Плановый полив'} 
+                  {result.ai_analysis.recommendation !== 'SKIP' && ` (${result.ai_analysis.water_amount_liters_per_m2} л/м²)`}
                 </h3>
-                <p className={styles.recReason}>{result.recommendation.reason}</p>
+                <p className={styles.recReason}><strong>Анализ ИИ:</strong> {result.ai_analysis.reason}</p>
+                
+                {result.ai_analysis.tips && result.ai_analysis.tips.length > 0 && (
+                  <ul style={{ marginTop: '10px', paddingLeft: '20px', fontSize: '0.9rem', color: '#555' }}>
+                    {result.ai_analysis.tips.map((tip, idx) => (
+                      <li key={idx}>{tip}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
           </div>
