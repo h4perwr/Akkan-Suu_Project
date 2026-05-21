@@ -1,6 +1,7 @@
 from typing import List
 from datetime import datetime, timedelta
 import requests
+from backend.app import models
 import jwt
 from passlib.context import CryptContext
 
@@ -9,9 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from app.database import engine, Base, get_db
-from app import models, schemas
-from app.config import settings
+from backend.app.database import engine, Base, get_db
+from backend.app import schemas
+from backend.app.config import settings
 
 
 Base.metadata.create_all(bind=engine)
