@@ -6,6 +6,9 @@ __pycache__/
 .DS_Store
 dist/
 build/
-./gitignore
+.gitignore
 ./src/
 __./MACOSX/
+venv/
+.env
+__pycache__/
