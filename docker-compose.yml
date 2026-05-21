@@ -1,7 +1,29 @@
-#Backend
 services:
-  server:
-    build:
-      context: .
+  db:
+    image: postgres:16
+    container_name: akkan_suu_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: akkan_suu_db
     ports:
-      - 8000:8000
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d
+
+  backend:
+    build:
+      context: ./backend/
+    container_name: akkan_suu_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

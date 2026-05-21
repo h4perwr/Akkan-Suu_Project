@@ -1,7 +1,7 @@
 from typing import List
 from datetime import datetime, timedelta
 import requests
-from backend.app import models
+from app import models
 import jwt
 from passlib.context import CryptContext
 
