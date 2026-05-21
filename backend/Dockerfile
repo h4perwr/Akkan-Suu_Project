@@ -4,10 +4,10 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["python", "run", "main.py", "--port", "80"]
+EXPOSE 8000
 
-## примерно
+CMD ["python", "main.py", "--host", "0.0.0.0", "--port", "8000"]
