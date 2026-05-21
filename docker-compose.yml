@@ -1,1 +1,7 @@
-# пока ничего
+#Backend
+services:
+  server:
+    build:
+      context: .
+    ports:
+      - 8000:8000
