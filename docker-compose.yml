@@ -22,6 +22,18 @@ services:
       - .env
     depends_on:
       - db
+  
+  frontend:
+    build:
+      context: ./frontend/
+    container_name: akkan_suu_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:

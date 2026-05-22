@@ -1,0 +1,94 @@
+import { useState } from 'react'
+import styles from './Auth.module.css'
+
+export default function Auth({ setToken }) {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLogin, setIsLogin] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async () => {
+    setLoading(true)
+    setError('')
+
+    try {
+      if (isLogin) {
+    
+        const formData = new URLSearchParams()
+        formData.append('username', email)
+        formData.append('password', password)
+
+        const response = await fetch('http://127.0.0.1:8000/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData
+        })
+
+        if (!response.ok) {
+          const errData = await response.json()
+          throw new Error(errData.detail || 'Ошибка при входе')
+        }
+
+        const data = await response.json()
+        localStorage.setItem('token', data.access_token) 
+        setToken(data.access_token) 
+
+      } else {
+        const response = await fetch('http://127.0.0.1:8000/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        })
+
+        if (!response.ok) {
+          const errData = await response.json()
+          throw new Error(errData.detail || 'Ошибка при регистрации')
+        }
+
+        const data = await response.json()
+        localStorage.setItem('token', data.access_token)
+        setToken(data.access_token)
+      }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.card}>
+        <div className={styles.logo}>💧</div>
+        <h1 className={styles.title}>Akkan-Suu</h1>
+        <p className={styles.subtitle}>Умный полив для вашего поля</p>
+
+        <input
+          className={styles.input}
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+        />
+        <input
+          className={styles.input}
+          type="password"
+          placeholder="Пароль"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
+
+        {error && <p className={styles.error}>{error}</p>}
+
+        <button className={styles.btn} onClick={handleSubmit} disabled={loading}>
+          {loading ? 'Загрузка...' : isLogin ? 'Войти' : 'Зарегистрироваться'}
+        </button>
+
+        <p className={styles.toggle} onClick={() => setIsLogin(!isLogin)}>
+          {isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'}
+        </p>
+      </div>
+    </div>
+  )
+}

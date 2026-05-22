@@ -1,9 +1,11 @@
 from typing import List
 from datetime import datetime, timedelta
 import requests
-from app import models
 import jwt
+import json
 from passlib.context import CryptContext
+from google import genai
+from google.genai import types
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,9 +13,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app.database import engine, Base, get_db
-from app import schemas
+from app import models, schemas
 from app.config import settings
-
 
 Base.metadata.create_all(bind=engine)
 
@@ -62,6 +63,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
+
 @app.post("/api/register", response_model=schemas.Token)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
@@ -86,13 +88,13 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/api/recommendation", response_model=schemas.RecommendationResponse)
+
+@app.post("/api/recommendation")
 def get_recommendation(
     payload: schemas.RecommendationRequest, 
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    # Словарь координат регионов Кыргызстана
     region_coords = {
         "Чуйский район": (42.87, 74.59),
         "Ошская область": (40.51, 72.81),
@@ -105,33 +107,89 @@ def get_recommendation(
     
     lat, lon = region_coords.get(payload.region, (42.87, 74.59))
 
-    # Запрос к Open-Meteo
     try:
-        weather_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m"
+        weather_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,precipitation"
         response = requests.get(weather_url, timeout=5)
         real_weather = response.json()
         
         current_temp = int(real_weather['current']['temperature_2m'])
         humidity = int(real_weather['current']['relative_humidity_2m'])
+        rain_mm = real_weather['current'].get('precipitation', 0.0)
+        rain_probability = 100 if rain_mm > 0 else 0
     except Exception:
         raise HTTPException(status_code=503, detail="Сервис погоды временно недоступен")
     
-    if current_temp > 25 and humidity < 50:
-        should_water = True
-        reason = f"В регионе {payload.region} жарко (+{current_temp}°C) и сухо (влажность {humidity}%). Рекомендуется полив."
-    else:
-        should_water = False
-        reason = f"В регионе {payload.region} условия оптимальны (+{current_temp}°C, влажность {humidity}%). Полив не требуется."
-
-    return {
-      "weather": {"temperature": current_temp, "condition": "Данные Open-Meteo", "humidity": humidity},
-      "recommendation": {"should_water": should_water, "reason": reason}
+    weather_json_to_ai = {
+        "temperature": current_temp,
+        "humidity": humidity,
+        "rain_probability": rain_probability,
+        "rain_mm": rain_mm
     }
 
-@app.get("/api/fields")
-def get_user_fields(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    
-    return db.query(models.Field).filter(models.Field.owner_id == current_user.id).all()
+    SYSTEM_PROMPT = """
+    You are an expert agronomist AI advisor for farmers.
+    Analyze weather data and return ONLY a JSON object:
+    {
+      "recommendation": "REDUCE | NORMAL | INCREASE | SKIP",
+      "urgency": "LOW | MEDIUM | HIGH",
+      "water_amount_liters_per_m2": 10,
+      "reason": "1-2 sentences in Russian",
+      "forecast_summary": "brief summary in Russian",
+      "tips": ["tip 1", "tip 2"]
+    }
+    Rules:
+    - rain_probability > 70% AND rain_mm > 5 → SKIP, LOW
+    - rain_probability 40-70% → REDUCE, MEDIUM
+    - temperature > 35 AND humidity < 30 → INCREASE, HIGH
+    - temperature 20-35 AND humidity 30-60 → NORMAL, MEDIUM
+    - humidity > 70 → REDUCE, LOW
+    """
+
+    try:
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        
+        ai_response = client.models.generate_content(
+            model='gemini-3.1-flash-lite',
+            contents=json.dumps(weather_json_to_ai),
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                response_mime_type="application/json", 
+            )
+        )
+        
+        text = ai_response.text.strip()
+        
+        if text.startswith("```"):
+            text = text.strip("`").replace("json", "").strip()
+            
+        ai_data = json.loads(text)
+        
+        return {
+            "region": payload.region,
+            "weather": {
+                "temperature": current_temp,
+                "humidity": humidity,
+                "rain_mm": rain_mm,
+                "source": "Open-Meteo"
+            },
+            "ai_analysis": ai_data
+        }
+        
+    except Exception as e:
+        print(f"\n{'='*50}\n🚨 ОШИБКА GOOGLE GEMINI: {str(e)}\n{'='*50}\n")
+        
+        return {
+            "region": payload.region,
+            "weather": {"temperature": current_temp, "humidity": humidity, "rain_mm": rain_mm, "source": "Open-Meteo"},
+            "ai_analysis": {
+                "recommendation": "NORMAL",
+                "urgency": "MEDIUM",
+                "water_amount_liters_per_m2": 5,
+                "reason": "ИИ временно недоступен. Расчет произведен по базовым параметрам.",
+                "forecast_summary": "Стабильные показатели.",
+                "tips": ["Проверьте влажность почвы вручную."]
+            }
+        }
 
 @app.get("/api/fields", response_model=List[schemas.FieldOut])
 def get_user_fields(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
