@@ -11,6 +11,7 @@ export default function Dashboard({ token, onLogout }) {
   const [region, setRegion] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
+  const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 
   const getUserEmail = () => {
@@ -28,7 +29,7 @@ export default function Dashboard({ token, onLogout }) {
     setResult(null)
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/recommendation', {
+      const response = await fetch(`${API_URL}/api/recommendation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
