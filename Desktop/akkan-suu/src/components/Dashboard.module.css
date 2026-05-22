@@ -1,0 +1,447 @@
+.wrapper {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.3s;
+  position: relative;
+}
+
+.header {
+  background: var(--green-dark);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerLeft { display: flex; align-items: center; gap: 12px; }
+.logoTitle { color: white; font-size: 16px; font-weight: 700; }
+.logoSub { color: #a8d5b5; font-size: 11px; }
+.headerRight { display: flex; align-items: center; gap: 12px; }
+
+.themeBtn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.email { color: #a8d5b5; font-size: 13px; }
+
+.logoutBtn {
+  background: transparent;
+  border: 1px solid #a8d5b5;
+  color: #a8d5b5;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all .2s;
+}
+.logoutBtn:hover { background: #a8d5b5; color: var(--green-dark); }
+
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+.mapSection { display: flex; flex-direction: column; gap: 14px; }
+.resultSection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--bg2);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 16px;
+  min-height: 400px;
+}
+
+.cardHeader {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.mapWrapper {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #e8f5e0;
+  height: 300px;
+  width: 100%;
+}
+
+
+
+.pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: white;
+  border: 2px solid var(--green);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all .2s;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.pin:hover { transform: translate(-50%, -50%) scale(1.1); }
+.pinActive {
+  background: #1a7a42;
+  color: white;
+  transform: translate(-50%, -50%) scale(1.15);
+  border-color: #0f4c2a;
+  box-shadow: 0 4px 12px rgba(26, 122, 66, 0.5);
+}
+
+.pinActive .pinLabel {
+  color: white;
+}
+
+.pinLabel { font-size: 10px; font-weight: 500; }
+
+.fieldsCard {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.formGroup { display: flex; flex-direction: column; gap: 4px; }
+
+.formGroup label {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.formGroup select,
+.formGroup input {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+
+.formGroup select:focus,
+.formGroup input:focus { border-color: var(--green); }
+
+.btnPrimary {
+  width: 100%;
+  padding: 12px;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .2s;
+  margin-top: 4px;
+}
+.btnPrimary:hover { opacity: 0.88; }
+
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.statCard {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.statIcon { font-size: 16px; }
+.statVal { font-size: 16px; font-weight: 700; color: var(--green); }
+.statLbl { font-size: 10px; color: var(--text2); }
+
+.recCard {
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.water { background: #e8f4fd; border: 2px solid #3498db; }
+.noWater { background: #eafaf1; border: 2px solid #2ecc71; }
+
+.recIcon { font-size: 32px; }
+.recTitle { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.recReason { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+.emptyCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text2);
+  text-align: center;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+/* SKELETON */
+.skeletonWrapper {
+  background: var(--bg2);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+}
+
+.skeletonHeader {
+  height: 20px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  width: 60%;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.skeletonCard {
+  height: 70px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 10px;
+}
+
+.skeletonText {
+  height: 14px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* CHAT */
+.chatWidget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.chatToggle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  transition: transform .2s;
+}
+.chatToggle:hover { transform: scale(1.1); }
+
+.chatBox {
+  width: 320px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chatHeader {
+  background: var(--green-dark);
+  color: white;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.chatHeader button {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.chatMessages {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.chatMsg {
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 85%;
+}
+
+.chatBot {
+  background: var(--bg3);
+  color: var(--text);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.chatUser {
+  background: var(--green);
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.typing {
+  font-size: 18px;
+  letter-spacing: 3px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.chatInputRow {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.chatInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+
+.chatInput:focus { border-color: var(--green); }
+
+.chatSend {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: opacity .2s;
+}
+.chatSend:hover { opacity: 0.85; }
+
+
+.forecastRow {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.forecastDay {
+  min-width: 64px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 4px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.forecastDayName {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.forecastIcon { font-size: 18px; margin: 4px 0; }
+.forecastTemp { font-size: 13px; font-weight: 700; color: var(--green); }
+.forecastRain { font-size: 10px; color: var(--text2); margin-top: 2px; }
+
+.mapImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.8;
+  border-radius: 12px;
+}
