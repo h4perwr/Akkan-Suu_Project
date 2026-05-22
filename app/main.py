@@ -3,8 +3,9 @@ from datetime import datetime, timedelta
 import requests
 import jwt
 import json
-import google.generativeai as genai
 from passlib.context import CryptContext
+from google import genai
+from google.genai import types
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,7 +15,6 @@ from sqlalchemy.orm import Session
 from app.database import engine, Base, get_db
 from app import models, schemas
 from app.config import settings
-
 
 Base.metadata.create_all(bind=engine)
 
@@ -27,10 +27,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-genai.configure(api_key=settings.GEMINI_API_KEY)
-
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
@@ -136,7 +132,7 @@ def get_recommendation(
     {
       "recommendation": "REDUCE | NORMAL | INCREASE | SKIP",
       "urgency": "LOW | MEDIUM | HIGH",
-      "water_amount_liters_per_m2": number,
+      "water_amount_liters_per_m2": 10,
       "reason": "1-2 sentences in Russian",
       "forecast_summary": "brief summary in Russian",
       "tips": ["tip 1", "tip 2"]
@@ -147,16 +143,20 @@ def get_recommendation(
     - temperature > 35 AND humidity < 30 → INCREASE, HIGH
     - temperature 20-35 AND humidity 30-60 → NORMAL, MEDIUM
     - humidity > 70 → REDUCE, LOW
-    Return ONLY JSON, no extra text.
     """
 
     try:
-        model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            system_instruction=SYSTEM_PROMPT,
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        
+        ai_response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=json.dumps(weather_json_to_ai),
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                response_mime_type="application/json", 
+            )
         )
         
-        ai_response = model.generate_content(json.dumps(weather_json_to_ai))
         text = ai_response.text.strip()
         
         if text.startswith("```"):
@@ -176,6 +176,8 @@ def get_recommendation(
         }
         
     except Exception as e:
+        print(f"\n{'='*50}\n🚨 ОШИБКА GOOGLE GEMINI: {str(e)}\n{'='*50}\n")
+        
         return {
             "region": payload.region,
             "weather": {"temperature": current_temp, "humidity": humidity, "rain_mm": rain_mm, "source": "Open-Meteo"},
