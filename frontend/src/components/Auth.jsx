@@ -6,7 +6,8 @@ export default function Auth({ setToken }) {
   const [password, setPassword] = useState('')
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState('')      
+  const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
   const handleSubmit = async () => {
     setLoading(true)
@@ -19,7 +20,7 @@ export default function Auth({ setToken }) {
         formData.append('username', email)
         formData.append('password', password)
 
-        const response = await fetch('http://127.0.0.1:8000/api/login', {
+        const response = await fetch(`${API_URL}/api/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: formData
@@ -35,7 +36,7 @@ export default function Auth({ setToken }) {
         setToken(data.access_token) 
 
       } else {
-        const response = await fetch('http://127.0.0.1:8000/api/register', {
+        const response = await fetch(`${API_URL}/api/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
