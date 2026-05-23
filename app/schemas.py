@@ -1,9 +1,27 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import List, Optional
 
 
 class RecommendationRequest(BaseModel):
     region: str
+    crop: str
+    soil: str
+    area: float
+    irrigation: str
+
+class FieldOut(BaseModel):
+    id: int
+    region: str
+    crop: str
+    soil: str
+    area: float
+    irrigation: str
+    recommendation: str | None
+    owner_id: int
+
+    class Config:
+        from_attributes = True
 
 
 class WeatherDetail(BaseModel):
@@ -49,11 +67,10 @@ class FieldCreate(BaseModel):
     name: str
     region: str
 
-class FieldOut(BaseModel):
-    id: int
-    name: str
-    region: str
-    owner_id: int
+class ChatMessage(BaseModel):
+    role: str
+    content: str
 
-    class Config:
-        from_attributes = True
+class ChatRequest(BaseModel):
+    message: str
+    history: Optional[List[ChatMessage]] = []

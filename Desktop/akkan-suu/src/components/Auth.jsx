@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { supabase } from '../supabase'
 import styles from './Auth.module.css'
 
-export default function Auth() {
+export default function Auth({ setToken }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLogin, setIsLogin] = useState(true)
@@ -12,14 +11,49 @@ export default function Auth() {
   const handleSubmit = async () => {
     setLoading(true)
     setError('')
-    let result
-    if (isLogin) {
-      result = await supabase.auth.signInWithPassword({ email, password })
-    } else {
-      result = await supabase.auth.signUp({ email, password })
+
+    try {
+      if (isLogin) {
+        const formData = new URLSearchParams()
+        formData.append('username', email)
+        formData.append('password', password)
+
+        const response = await fetch('http://127.0.0.1:8000/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData
+        })
+
+        if (!response.ok) {
+          const errData = await response.json()
+          throw new Error(errData.detail || 'Неверный email или пароль')
+        }
+
+        const data = await response.json()
+        localStorage.setItem('token', data.access_token)
+        if (setToken) setToken(data.access_token)
+
+      } else {
+        const response = await fetch('http://127.0.0.1:8000/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        })
+
+        if (!response.ok) {
+          const errData = await response.json()
+          throw new Error(errData.detail || 'Ошибка регистрации')
+        }
+
+        const data = await response.json()
+        localStorage.setItem('token', data.access_token)
+        if (setToken) setToken(data.access_token)
+      }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
-    if (result.error) setError(result.error.message)
-    setLoading(false)
   }
 
   return (

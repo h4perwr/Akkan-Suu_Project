@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../supabase'
 import styles from './Dashboard.module.css'
 
 const REGIONS = [
@@ -24,7 +23,7 @@ const MOCK = {
   }
 }
 
-export default function Dashboard({ session }) {
+export default function Dashboard({ token }) {
   const [theme, setTheme] = useState('light')
   const [activeRegion, setActiveRegion] = useState(null)
   const [crop, setCrop] = useState('Пшеница')
@@ -40,12 +39,15 @@ export default function Dashboard({ session }) {
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
 
+  const currentToken = token || localStorage.getItem('token')
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
+  const handleLogout = () => {
+
+    localStorage.removeItem('token')
     window.location.reload()
   }
 
@@ -60,13 +62,19 @@ export default function Dashboard({ session }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${currentToken}`
         },
+
         body: JSON.stringify({ region: activeRegion.name, crop, soil, area, irrigation })
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+          const errData = await res.json()
+          console.error("Ошибка от бэкенда:", errData)
+          throw new Error()
+      }
       setResult(await res.json())
-    } catch {
+    } catch (err) {
+      console.error(err)
       await new Promise(r => setTimeout(r, 2000))
       setResult(MOCK)
     }
@@ -84,7 +92,7 @@ export default function Dashboard({ session }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${currentToken}`
         },
         body: JSON.stringify({ message: userMsg })
       })
@@ -111,7 +119,6 @@ export default function Dashboard({ session }) {
           <button className={styles.themeBtn} onClick={toggleTheme}>
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
-          <span className={styles.email}>{session.user.email}</span>
           <button className={styles.logoutBtn} onClick={handleLogout}>Выйти</button>
         </div>
       </header>
@@ -119,7 +126,6 @@ export default function Dashboard({ session }) {
       <main className={styles.main}>
         <div className={styles.grid}>
 
-          {/* LEFT: MAP */}
           <div className={styles.mapSection}>
             <div className={styles.cardHeader}>🗺 Выберите регион</div>
             <div className={styles.mapWrapper}>
@@ -137,7 +143,6 @@ export default function Dashboard({ session }) {
               ))}
             </div> 
 
-            {/* FIELDS */}
             <div className={styles.fieldsCard}>
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
@@ -171,7 +176,6 @@ export default function Dashboard({ session }) {
             </div>
           </div>
 
-          {/* RIGHT: RESULT */}
           <div className={styles.resultSection}>
             {!loading && !result && (
               <div className={styles.emptyCard}>
@@ -211,21 +215,23 @@ export default function Dashboard({ session }) {
                     </div>
                     <div className={styles.statCard}>
                       <span className={styles.statIcon}>⛅</span>
-                      <span className={styles.statVal} style={{fontSize:12}}>{result.weather.condition}</span>
+                      <span className={styles.statVal} style={{fontSize:12}}>{result.weather.condition || "Данные с Open-Meteo"}</span>
                       <span className={styles.statLbl}>Условия</span>
                     </div>
                   </div>
                 </div>
 
-                <div className={`${styles.recCard} ${result.recommendation.should_water ? styles.water : styles.noWater}`}>
+                <div className={`${styles.recCard} ${result.ai_analysis?.recommendation === "SKIP" ? styles.noWater : styles.water}`}>
                   <div className={styles.recIcon}>
-                    {result.recommendation.should_water ? '💧' : '✅'}
+                    {result.ai_analysis?.recommendation === "SKIP" ? '✅' : '💧'}
                   </div>
                   <div>
                     <div className={styles.recTitle}>
-                      {result.recommendation.should_water ? 'Полив нужен!' : 'Полив не нужен'}
+                      {result.ai_analysis?.recommendation === "SKIP" ? 'Полив не нужен' : 'Полив нужен!'}
                     </div>
-                    <div className={styles.recReason}>{result.recommendation.reason}</div>
+                    <div className={styles.recReason}>
+                      {result.ai_analysis?.reason || result.recommendation?.reason}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -234,7 +240,6 @@ export default function Dashboard({ session }) {
         </div>
       </main>
 
-      {/* CHAT WIDGET */}
       <div className={styles.chatWidget}>
         {chatOpen && (
           <div className={styles.chatBox}>

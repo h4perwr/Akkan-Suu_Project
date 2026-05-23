@@ -1,23 +1,13 @@
-import { useState, useEffect } from 'react'
-import { supabase } from './supabase'
+import { useState } from 'react'
 import Auth from './components/Auth'
 import Dashboard from './components/Dashboard'
 
 function App() {
-  const [session, setSession] = useState(null)
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-  }, [])
+  const [token, setToken] = useState(localStorage.getItem('token'))
 
   return (
     <div>
-      {!session ? <Auth /> : <Dashboard session={session} />}
+      {!token ? <Auth setToken={setToken} /> : <Dashboard token={token} />}
     </div>
   )
 }
