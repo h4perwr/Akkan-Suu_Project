@@ -1,23 +1,28 @@
-from nt import environ
+from dotenv import load_dotenv
 from typing import List
 from datetime import datetime, timedelta
+
+import os
 import requests
 import jwt
 import json
 from passlib.context import CryptContext
-from google import genai
-from google.genai import types
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+from groq import Groq
+
 from sqlalchemy.orm import Session
 
 from app.database import engine, Base, get_db
 from app import models, schemas
 from app.config import settings
 
-from groq import Groq
+load_dotenv()
+
+api_key = os.getenv("FRONTEND_API_URL")
 
 Base.metadata.create_all(bind=engine)
 
@@ -26,7 +31,7 @@ app = FastAPI(title="Akkan-Suu API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        environ.get('FRONTEND_URL'),
+        api_key,
     ],
     allow_credentials=True,
     allow_methods=["*"],
