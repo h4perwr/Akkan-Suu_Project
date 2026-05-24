@@ -16,11 +16,8 @@ from app.database import engine, Base, get_db
 from app import models, schemas
 from app.config import settings
 
-<<<<<<< HEAD:backend/app/main.py
-=======
 from groq import Groq
 
->>>>>>> main:app/main.py
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Akkan-Suu API", version="1.0.0")
