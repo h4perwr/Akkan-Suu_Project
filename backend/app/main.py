@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from typing import List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import os
 import requests
@@ -8,17 +8,22 @@ import jwt
 import json
 from passlib.context import CryptContext
 
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from groq import Groq
 
 from sqlalchemy.orm import Session
 
-from app.database import engine, Base, get_db
+from app.database import engine, Base, get_db, SessionLocal
 from app import models, schemas
 from app.config import settings
+
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 load_dotenv()
 
@@ -26,10 +31,49 @@ frontend_url = os.getenv("FRONTEND_API_URL")
 
 Base.metadata.create_all(bind=engine)
 
+limiter = Limiter(key_func=get_remote_address)
+
 app = FastAPI(title="Akkan-Suu API", version="1.0.0")
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# Audit middleware
+class AuditMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+
+        user_email = None
+        try:
+            auth = request.headers.get("authorization")
+            if auth and auth.startswith("Bearer "):
+                token = auth.split(" ")[1]
+                payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+                user_email = payload.get("sub")
+        except Exception:
+            user_email = None
+
+        try:
+            db = SessionLocal()
+            log = models.AuditLog(
+                user_email=user_email,
+                method=request.method,
+                path=request.url.path,
+                status_code=response.status_code,
+                ip=request.client.host
+            )
+            db.add(log)
+            db.commit()
+            db.close()
+        except Exception:
+            pass
+
+        return response
+
+app.add_middleware(AuditMiddleware)
+
 app.add_middleware(
-    CORSMiddleware,
+    CORSMiddleware, 
     allow_origins=[frontend_url],
     allow_credentials=True,
     allow_methods=["*"],
@@ -71,8 +115,16 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
+
+@app.get("/api/admin/logs", response_model=List[schemas.AuditLogOut])
+def get_logs(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    logs = db.query(models.AuditLog).order_by(models.AuditLog.created_at.desc()).limit(100).all()
+    return logs
+
+
 @app.post("/api/register", response_model=schemas.Token)
-def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
+@limiter.limit("3/minute")
+def register(request: Request, user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Этот email уже зарегистрирован")
@@ -86,8 +138,10 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     access_token = create_access_token(data={"sub": new_user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
+
 @app.post("/api/login", response_model=schemas.Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Неверный email или пароль")
@@ -95,8 +149,11 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
+
 @app.post("/api/recommendation")
+@limiter.limit("10/hour")
 def get_recommendation(
+    request: Request,
     payload: schemas.RecommendationRequest, 
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
@@ -197,7 +254,9 @@ def get_recommendation(
 
 
 @app.post("/api/ai/chat")
+@limiter.limit("20/hour")
 def ai_chat(
+    request: Request,
     payload: schemas.ChatRequest, 
     current_user: models.User = Depends(get_current_user)
 ):

@@ -3,6 +3,18 @@ from datetime import datetime
 from typing import List, Optional
 
 
+class AuditLogOut(BaseModel):
+    id: int
+    user_email: str | None
+    method: str
+    path: str
+    status_code: int    
+    ip: str | None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
 class RecommendationRequest(BaseModel):
     region: str
     crop: str
