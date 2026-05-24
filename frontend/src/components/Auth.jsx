@@ -15,12 +15,19 @@ export default function Auth({ setToken }) {
 
     try {
       if (isLogin) {
+<<<<<<<< HEAD:frontend/src/components/Auth.jsx
     
+========
+>>>>>>>> main:Desktop/akkan-suu/src/components/Auth.jsx
         const formData = new URLSearchParams()
         formData.append('username', email)
         formData.append('password', password)
 
+<<<<<<<< HEAD:frontend/src/components/Auth.jsx
         const response = await fetch(`${API_URL}/api/login`, {
+========
+        const response = await fetch('http://127.0.0.1:8000/api/login', {
+>>>>>>>> main:Desktop/akkan-suu/src/components/Auth.jsx
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: formData
@@ -28,6 +35,7 @@ export default function Auth({ setToken }) {
 
         if (!response.ok) {
           const errData = await response.json()
+<<<<<<<< HEAD:frontend/src/components/Auth.jsx
           throw new Error(errData.detail || 'Ошибка при входе')
         }
 
@@ -37,6 +45,17 @@ export default function Auth({ setToken }) {
 
       } else {
         const response = await fetch(`${API_URL}/api/register`, {
+========
+          throw new Error(errData.detail || 'Неверный email или пароль')
+        }
+
+        const data = await response.json()
+        localStorage.setItem('token', data.access_token)
+        if (setToken) setToken(data.access_token)
+
+      } else {
+        const response = await fetch('http://127.0.0.1:8000/api/register', {
+>>>>>>>> main:Desktop/akkan-suu/src/components/Auth.jsx
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -44,12 +63,20 @@ export default function Auth({ setToken }) {
 
         if (!response.ok) {
           const errData = await response.json()
+<<<<<<<< HEAD:frontend/src/components/Auth.jsx
           throw new Error(errData.detail || 'Ошибка при регистрации')
+========
+          throw new Error(errData.detail || 'Ошибка регистрации')
+>>>>>>>> main:Desktop/akkan-suu/src/components/Auth.jsx
         }
 
         const data = await response.json()
         localStorage.setItem('token', data.access_token)
+<<<<<<<< HEAD:frontend/src/components/Auth.jsx
         setToken(data.access_token)
+========
+        if (setToken) setToken(data.access_token)
+>>>>>>>> main:Desktop/akkan-suu/src/components/Auth.jsx
       }
     } catch (err) {
       setError(err.message)

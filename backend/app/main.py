@@ -16,13 +16,21 @@ from app.database import engine, Base, get_db
 from app import models, schemas
 from app.config import settings
 
+<<<<<<< HEAD:backend/app/main.py
+=======
+from groq import Groq
+
+>>>>>>> main:app/main.py
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Akkan-Suu API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -63,7 +71,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
-
 @app.post("/api/register", response_model=schemas.Token)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
@@ -88,15 +95,15 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
-
 @app.post("/api/recommendation")
 def get_recommendation(
     payload: schemas.RecommendationRequest, 
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+
     region_coords = {
-        "Чуйский район": (42.87, 74.59),
+        "Чуйская область": (42.87, 74.59),
         "Ошская область": (40.51, 72.81),
         "Иссык-Кульская область": (42.48, 77.39),
         "Таласская область": (42.52, 72.24),
@@ -111,13 +118,12 @@ def get_recommendation(
         weather_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,precipitation"
         response = requests.get(weather_url, timeout=5)
         real_weather = response.json()
-        
         current_temp = int(real_weather['current']['temperature_2m'])
         humidity = int(real_weather['current']['relative_humidity_2m'])
         rain_mm = real_weather['current'].get('precipitation', 0.0)
         rain_probability = 100 if rain_mm > 0 else 0
     except Exception:
-        raise HTTPException(status_code=503, detail="Сервис погоды временно недоступен")
+        raise HTTPException(status_code=503, detail="Сервис погоды недоступен")
     
     weather_json_to_ai = {
         "temperature": current_temp,
@@ -133,9 +139,15 @@ def get_recommendation(
       "recommendation": "REDUCE | NORMAL | INCREASE | SKIP",
       "urgency": "LOW | MEDIUM | HIGH",
       "water_amount_liters_per_m2": 10,
+<<<<<<< HEAD:backend/app/main.py
       "reason": "1-2 sentences in Russian",
       "forecast_summary": "brief summary in Russian",
       "tips": ["tip 1", "tip 2"]
+=======
+      "reason": "1-2 предложения НА РУССКОМ ЯЗЫКЕ",
+      "forecast_summary": "краткая сводка погоды НА РУССКОМ ЯЗЫКЕ",
+      "tips": ["совет 1 на русском", "совет 2 на русском"]
+>>>>>>> main:app/main.py
     }
     Rules:
     - rain_probability > 70% AND rain_mm > 5 → SKIP, LOW
@@ -146,6 +158,7 @@ def get_recommendation(
     """
 
     try:
+<<<<<<< HEAD:backend/app/main.py
         client = genai.Client(api_key=settings.GEMINI_API_KEY)
         
         ai_response = client.models.generate_content(
@@ -159,23 +172,28 @@ def get_recommendation(
         
         text = ai_response.text.strip()
         
+=======
+
+        client = Groq(api_key=settings.GROQ_API_KEY)
+        
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": json.dumps(weather_json_to_ai)}
+            ]
+        )
+        
+        text = response.choices[0].message.content.strip()
+>>>>>>> main:app/main.py
         if text.startswith("```"):
-            text = text.strip("`").replace("json", "").strip()
+            text = text.replace("```json", "").replace("```", "").strip()
             
         ai_data = json.loads(text)
-        
-        return {
-            "region": payload.region,
-            "weather": {
-                "temperature": current_temp,
-                "humidity": humidity,
-                "rain_mm": rain_mm,
-                "source": "Open-Meteo"
-            },
-            "ai_analysis": ai_data
-        }
+        ai_reason = ai_data.get("reason", "Рекомендация успешно сформирована.")
         
     except Exception as e:
+<<<<<<< HEAD:backend/app/main.py
         print(f"\n{'='*50}\n🚨 ОШИБКА GOOGLE GEMINI: {str(e)}\n{'='*50}\n")
         
         return {
@@ -189,7 +207,67 @@ def get_recommendation(
                 "forecast_summary": "Стабильные показатели.",
                 "tips": ["Проверьте влажность почвы вручную."]
             }
+=======
+        print(f"\n🚨 ОШИБКА GROQ: {str(e)}\n")
+        ai_data = {
+            "recommendation": "NORMAL", "urgency": "MEDIUM", "water_amount_liters_per_m2": 5,
+            "reason": "ИИ временно недоступен. Расчет по базовым параметрам.",
+            "forecast_summary": "Стабильные показатели.", "tips": ["Проверьте влажность почвы вручную."]
+>>>>>>> main:app/main.py
         }
+        ai_reason = ai_data["reason"]
+
+
+    new_field = models.Field(
+        region=payload.region, crop=payload.crop, soil=payload.soil,
+        area=payload.area, irrigation=payload.irrigation,
+        recommendation=ai_reason, owner_id=current_user.id
+    )
+    db.add(new_field)
+    db.commit()
+    db.refresh(new_field)
+        
+    return {
+        "region": payload.region,
+        "weather": {"temperature": current_temp, "humidity": humidity, "rain_mm": rain_mm, "source": "Open-Meteo"},
+        "ai_analysis": ai_data
+    }
+
+
+@app.post("/api/ai/chat")
+def ai_chat(
+    payload: schemas.ChatRequest, 
+    current_user: models.User = Depends(get_current_user)
+):
+    try:
+        client = Groq(api_key=settings.GROQ_API_KEY)
+        
+        CHAT_PROMPT = """
+        Ты — опытный ИИ-агроном из Кыргызстана. 
+        Твоя задача: помогать фермерам, отвечая на вопросы о поливе, урожае, погоде и удобрениях.
+        Пиши простым, понятным языком, без сложной терминологии. Отвечай кратко и только по делу.
+        ВАЖНО: ВСЕГДА отвечай на русском языке (или на том языке, на котором к тебе обратился пользователь).
+        """
+        
+
+        messages = [{"role": "system", "content": CHAT_PROMPT}]
+        if payload.history:
+            for msg in payload.history:
+                messages.append({"role": msg.role, "content": msg.content})
+                
+        messages.append({"role": "user", "content": payload.message})
+        
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=messages
+        )
+        
+        reply_text = response.choices[0].message.content.strip()
+        return {"reply": reply_text}
+        
+    except Exception as e:
+        print(f"\n🚨 ОШИБКА GROQ CHAT: {str(e)}\n")
+        raise HTTPException(status_code=500, detail="Ошибка ИИ чата")
 
 @app.get("/api/fields", response_model=List[schemas.FieldOut])
 def get_user_fields(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):

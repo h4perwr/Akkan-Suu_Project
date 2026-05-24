@@ -1,33 +1,37 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+:root {
+  --bg: #f0f7f4;
+  --bg2: #ffffff;
+  --bg3: #e8f5e9;
+  --text: #1a1a1a;
+  --text2: #666666;
+  --green: #1a7a42;
+  --green-dark: #0f4c2a;
+  --green-light: #639922;
+  --border: #e0e0e0;
+  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
+[data-theme="dark"] {
+  --bg: #0f1a12;
+  --bg2: #1a2e1e;
+  --bg3: #162419;
+  --text: #f0f0f0;
+  --text2: #aaaaaa;
+  --green: #2ecc71;
+  --green-dark: #27ae60;
+  --green-light: #82e0aa;
+  --border: #2a3f2e;
+  --shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+body {
   background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
 }
 
 @media (prefers-color-scheme: dark) {

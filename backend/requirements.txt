@@ -1,3 +1,4 @@
+<<<<<<< HEAD:backend/requirements.txt
 annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.13.0
@@ -26,3 +27,18 @@ typing_extensions==4.15.0
 urllib3==2.7.0
 uvicorn==0.47.0
 google-genai==2.6.0
+=======
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic
+pydantic-settings
+passlib
+bcrypt
+PyJWT
+python-dotenv
+python-multipart
+requests
+google-genai
+>>>>>>> main:requirements.txt
