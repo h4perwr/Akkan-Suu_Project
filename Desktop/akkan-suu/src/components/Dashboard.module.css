@@ -4,87 +4,134 @@
   color: var(--text);
   transition: all 0.3s;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
+/* --- ХЕДЕР --- */
 .header {
   background: var(--green-dark);
-  padding: 14px 24px;
+  padding: 16px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
 }
 
-.headerLeft { display: flex; align-items: center; gap: 12px; }
-.logoTitle { color: white; font-size: 16px; font-weight: 700; }
-.logoSub { color: #a8d5b5; font-size: 11px; }
-.headerRight { display: flex; align-items: center; gap: 12px; }
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoTitle {
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.logoSub {
+  color: #a8d5b5;
+  font-size: 12px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
 .themeBtn {
   background: transparent;
   border: none;
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
 }
 
-.email { color: #a8d5b5; font-size: 13px; }
+.email {
+  color: #a8d5b5;
+  font-size: 14px;
+  font-weight: 500;
+}
 
 .logoutBtn {
   background: transparent;
   border: 1px solid #a8d5b5;
   color: #a8d5b5;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   transition: all .2s;
 }
-.logoutBtn:hover { background: #a8d5b5; color: var(--green-dark); }
 
-.main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 20px;
+.logoutBtn:hover {
+  background: #a8d5b5;
+  color: var(--green-dark);
 }
 
+/* --- ГЛАВНЫЙ КОНТЕЙНЕР --- */
+.main {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 100px 24px;
+  flex: 1;
+}
+
+/* --- ОСНОВНАЯ СЕТКА --- */
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.2fr 1fr;
+  /* Левая часть с картой чуть шире */
+  gap: 30px;
+  /* Увеличен отступ между колонками */
+  align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+
+  /* На планшетах и ниже ставим блоки друг под друга */
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mapSection {
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
-@media (max-width: 768px) {
-  .grid { grid-template-columns: 1fr; }
-}
-
-.mapSection { display: flex; flex-direction: column; gap: 14px; }
 .resultSection {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   background: var(--bg2);
   border-radius: 16px;
   border: 1px solid var(--border);
-  padding: 16px;
+  padding: 24px;
   min-height: 400px;
 }
 
 .cardHeader {
-  font-size: 14px;
+  font-size: 26px;
   font-weight: 600;
   margin-bottom: 12px;
+  text-align: center;
 }
 
+/* --- КАРТА --- */
 .mapWrapper {
   position: relative;
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--border);
   background: #e8f5e0;
-  height: 300px;
+  height: 350px;
+  /* Немного увеличили высоту карты */
   width: 100%;
 }
-
-
 
 .pin {
   position: absolute;
@@ -92,124 +139,189 @@
   background: white;
   border: 2px solid var(--green);
   border-radius: 20px;
-  padding: 4px 10px;
-  font-size: 11px;
+  padding: 6px 12px;
+  font-size: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   transition: all .2s;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.pin:hover { transform: translate(-50%, -50%) scale(1.1); }
+.pin:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
 .pinActive {
   background: #1a7a42;
   color: white;
-  transform: translate(-50%, -50%) scale(1.15);
+  transform: translate(-50%, -50%) scale(1.1);
   border-color: #0f4c2a;
-  box-shadow: 0 4px 12px rgba(26, 122, 66, 0.5);
+  box-shadow: 0 6px 16px rgba(26, 122, 66, 0.4);
 }
 
 .pinActive .pinLabel {
   color: white;
 }
 
-.pinLabel { font-size: 10px; font-weight: 500; }
+.pinLabel {
+  font-size: 11px;
+  font-weight: 600;
+}
 
+/* --- ФОРМА ВВОДА --- */
 .fieldsCard {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 16px;
+  padding: 24px;
 }
 
 .formRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 16px;
+  /* Увеличили отступы между инпутами */
+  margin-bottom: 16px;
 }
 
-.formGroup { display: flex; flex-direction: column; gap: 4px; }
+@media (max-width: 480px) {
+
+  /* На мобильных инпуты встанут в одну колонку */
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
 .formGroup label {
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--text2);
 }
 
 .formGroup select,
 .formGroup input {
-  padding: 8px 10px;
+  padding: 10px 14px;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 14px;
   background: var(--bg);
   color: var(--text);
   outline: none;
+  transition: border-color 0.2s;
 }
 
 .formGroup select:focus,
-.formGroup input:focus { border-color: var(--green); }
+.formGroup input:focus {
+  border-color: var(--green);
+}
 
 .btnPrimary {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background: var(--green);
   color: white;
   border: none;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity .2s;
-  margin-top: 4px;
+  transition: opacity .2s, transform .1s;
+  margin-top: 8px;
 }
-.btnPrimary:hover { opacity: 0.88; }
 
+.btnPrimary:hover {
+  opacity: 0.9;
+}
+
+.btnPrimary:active {
+  transform: translateY(2px);
+}
+
+/* --- КАРТОЧКИ СТАТИСТИКИ --- */
 .card {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  padding: 20px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
 }
 
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 12px;
 }
 
 .statCard {
   background: var(--bg);
-  border-radius: 10px;
-  padding: 10px 8px;
+  border-radius: 12px;
+  padding: 14px 10px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 6px;
+  border: 1px solid var(--border);
 }
 
-.statIcon { font-size: 16px; }
-.statVal { font-size: 16px; font-weight: 700; color: var(--green); }
-.statLbl { font-size: 10px; color: var(--text2); }
+.statIcon {
+  font-size: 20px;
+}
 
+.statVal {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.statLbl {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+/* --- РЕКОМЕНДАЦИЯ --- */
 .recCard {
   border-radius: 16px;
-  padding: 16px;
+  padding: 20px;
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: 16px;
 }
 
-.water { background: #e8f4fd; border: 2px solid #3498db; }
-.noWater { background: #eafaf1; border: 2px solid #2ecc71; }
+.water {
+  background: #e8f4fd;
+  border: 2px solid #3498db;
+}
 
-.recIcon { font-size: 32px; }
-.recTitle { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-.recReason { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.noWater {
+  background: #eafaf1;
+  border: 2px solid #2ecc71;
+}
+
+.recIcon {
+  font-size: 36px;
+}
+
+.recTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.recReason {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.6;
+}
 
 .emptyCard {
   display: flex;
@@ -219,61 +331,66 @@
   height: 100%;
   color: var(--text2);
   text-align: center;
-  gap: 12px;
-  font-size: 14px;
+  gap: 16px;
+  font-size: 15px;
   line-height: 1.6;
   padding: 20px;
 }
 
-/* SKELETON */
+/* --- SKELETON --- */
 .skeletonWrapper {
   background: var(--bg2);
   border-radius: 16px;
-  padding: 20px;
+  padding: 24px;
   border: 1px solid var(--border);
 }
 
 .skeletonHeader {
-  height: 20px;
+  height: 24px;
   background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 8px;
-  margin-bottom: 16px;
-  width: 60%;
+  margin-bottom: 20px;
+  width: 50%;
 }
 
 .skeletonGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .skeletonCard {
-  height: 70px;
+  height: 80px;
   background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .skeletonText {
-  height: 14px;
+  height: 16px;
   width: 100%;
   background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
-/* CHAT */
+/* --- CHAT WIDGET --- */
 .chatWidget {
   position: fixed;
   bottom: 24px;
@@ -282,29 +399,33 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 10px;
+  gap: 12px;
 }
 
 .chatToggle {
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: var(--green);
   color: white;
   border: none;
-  font-size: 22px;
+  font-size: 24px;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  transition: transform .2s;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: transform .2s, box-shadow .2s;
 }
-.chatToggle:hover { transform: scale(1.1); }
+
+.chatToggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
 
 .chatBox {
-  width: 320px;
+  width: 360px;
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -313,12 +434,12 @@
 .chatHeader {
   background: var(--green-dark);
   color: white;
-  padding: 12px 16px;
+  padding: 16px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .chatHeader button {
@@ -326,23 +447,23 @@
   border: none;
   color: white;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .chatMessages {
   flex: 1;
-  padding: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 280px;
+  gap: 10px;
+  max-height: 320px;
   overflow-y: auto;
 }
 
 .chatMsg {
-  padding: 8px 12px;
-  border-radius: 12px;
-  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
   line-height: 1.5;
   max-width: 85%;
 }
@@ -352,6 +473,7 @@
   color: var(--text);
   align-self: flex-start;
   border-bottom-left-radius: 4px;
+  border: 1px solid var(--border);
 }
 
 .chatUser {
@@ -362,78 +484,98 @@
 }
 
 .typing {
-  font-size: 18px;
+  font-size: 20px;
   letter-spacing: 3px;
   animation: blink 1s infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  color: var(--text2);
 }
 
 .chatInputRow {
   display: flex;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 10px;
+  padding: 14px 16px;
   border-top: 1px solid var(--border);
+  background: var(--bg2);
 }
 
 .chatInput {
   flex: 1;
-  padding: 8px 12px;
+  padding: 10px 16px;
   border: 1px solid var(--border);
-  border-radius: 20px;
-  font-size: 13px;
+  border-radius: 24px;
+  font-size: 14px;
   background: var(--bg);
   color: var(--text);
   outline: none;
+  transition: border-color 0.2s;
 }
 
-.chatInput:focus { border-color: var(--green); }
+.chatInput:focus {
+  border-color: var(--green);
+}
 
 .chatSend {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: var(--green);
   color: white;
   border: none;
   cursor: pointer;
-  font-size: 14px;
-  transition: opacity .2s;
+  font-size: 16px;
+  transition: opacity .2s, transform .1s;
 }
-.chatSend:hover { opacity: 0.85; }
 
+.chatSend:hover {
+  opacity: 0.9;
+}
 
+.chatSend:active {
+  transform: scale(0.95);
+}
+
+/* --- ГРАФИК ПОГОДЫ --- */
 .forecastRow {
   display: flex;
   flex-direction: row;
-  gap: 6px;
+  gap: 8px;
   overflow-x: auto;
-  padding-bottom: 6px;
+  padding-bottom: 10px;
 }
 
 .forecastDay {
-  min-width: 64px;
+  min-width: 72px;
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 8px 4px;
+  border-radius: 12px;
+  padding: 10px 6px;
   text-align: center;
   flex-shrink: 0;
 }
 
 .forecastDayName {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--text);
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
-.forecastIcon { font-size: 18px; margin: 4px 0; }
-.forecastTemp { font-size: 13px; font-weight: 700; color: var(--green); }
-.forecastRain { font-size: 10px; color: var(--text2); margin-top: 2px; }
+.forecastIcon {
+  font-size: 20px;
+  margin: 6px 0;
+}
+
+.forecastTemp {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.forecastRain {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 4px;
+}
 
 .mapImg {
   position: absolute;
@@ -442,6 +584,5 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.8;
-  border-radius: 12px;
+  opacity: 0.85;
 }
