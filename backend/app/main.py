@@ -22,7 +22,7 @@ from app.config import settings
 
 load_dotenv()
 
-api_key = os.getenv("FRONTEND_API_URL")
+frontend_url = os.getenv("FRONTEND_API_URL")
 
 Base.metadata.create_all(bind=engine)
 
@@ -30,9 +30,7 @@ app = FastAPI(title="Akkan-Suu API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        api_key,
-    ],
+    allow_origins=[frontend_url],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

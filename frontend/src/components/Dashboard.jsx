@@ -53,14 +53,14 @@ export default function Dashboard({ token }) {
 
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light')
 
-  const API_URL = import.meta.env.BACKEND_API_URL
+  const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL
 
   const getRecommendation = async () => {
     if (!activeRegion) return alert('Выберите регион на карте!')
     setLoading(true)
     setResult(null)
     try {
-      const res = await fetch(`${API_URL}/api/recommendation`, {
+      const res = await fetch(`${BACKEND_API_URL}/api/recommendation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export default function Dashboard({ token }) {
     setChatInput('')
     setChatLoading(true)
     try {
-      const res = await fetch(`${API_URL}/api/ai/chat`, {
+      const res = await fetch(`${BACKEND_API_URL}/api/ai/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
