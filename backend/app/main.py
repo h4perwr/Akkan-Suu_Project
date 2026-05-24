@@ -136,15 +136,9 @@ def get_recommendation(
       "recommendation": "REDUCE | NORMAL | INCREASE | SKIP",
       "urgency": "LOW | MEDIUM | HIGH",
       "water_amount_liters_per_m2": 10,
-<<<<<<< HEAD:backend/app/main.py
-      "reason": "1-2 sentences in Russian",
-      "forecast_summary": "brief summary in Russian",
-      "tips": ["tip 1", "tip 2"]
-=======
       "reason": "1-2 предложения НА РУССКОМ ЯЗЫКЕ",
       "forecast_summary": "краткая сводка погоды НА РУССКОМ ЯЗЫКЕ",
       "tips": ["совет 1 на русском", "совет 2 на русском"]
->>>>>>> main:app/main.py
     }
     Rules:
     - rain_probability > 70% AND rain_mm > 5 → SKIP, LOW
@@ -155,21 +149,6 @@ def get_recommendation(
     """
 
     try:
-<<<<<<< HEAD:backend/app/main.py
-        client = genai.Client(api_key=settings.GEMINI_API_KEY)
-        
-        ai_response = client.models.generate_content(
-            model='gemini-3.1-flash-lite',
-            contents=json.dumps(weather_json_to_ai),
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                response_mime_type="application/json", 
-            )
-        )
-        
-        text = ai_response.text.strip()
-        
-=======
 
         client = Groq(api_key=settings.GROQ_API_KEY)
         
@@ -182,7 +161,6 @@ def get_recommendation(
         )
         
         text = response.choices[0].message.content.strip()
->>>>>>> main:app/main.py
         if text.startswith("```"):
             text = text.replace("```json", "").replace("```", "").strip()
             
@@ -190,27 +168,11 @@ def get_recommendation(
         ai_reason = ai_data.get("reason", "Рекомендация успешно сформирована.")
         
     except Exception as e:
-<<<<<<< HEAD:backend/app/main.py
-        print(f"\n{'='*50}\n🚨 ОШИБКА GOOGLE GEMINI: {str(e)}\n{'='*50}\n")
-        
-        return {
-            "region": payload.region,
-            "weather": {"temperature": current_temp, "humidity": humidity, "rain_mm": rain_mm, "source": "Open-Meteo"},
-            "ai_analysis": {
-                "recommendation": "NORMAL",
-                "urgency": "MEDIUM",
-                "water_amount_liters_per_m2": 5,
-                "reason": "ИИ временно недоступен. Расчет произведен по базовым параметрам.",
-                "forecast_summary": "Стабильные показатели.",
-                "tips": ["Проверьте влажность почвы вручную."]
-            }
-=======
         print(f"\n🚨 ОШИБКА GROQ: {str(e)}\n")
         ai_data = {
             "recommendation": "NORMAL", "urgency": "MEDIUM", "water_amount_liters_per_m2": 5,
             "reason": "ИИ временно недоступен. Расчет по базовым параметрам.",
             "forecast_summary": "Стабильные показатели.", "tips": ["Проверьте влажность почвы вручную."]
->>>>>>> main:app/main.py
         }
         ai_reason = ai_data["reason"]
 
