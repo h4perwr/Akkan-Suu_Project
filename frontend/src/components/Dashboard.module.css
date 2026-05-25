@@ -1,103 +1,630 @@
+
+
 .wrapper {
   min-height: 100vh;
-  background: #f0f7f4;
-  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.3s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+  url('/field.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
+/* --- ХЕДЕР --- */
 .header {
-  background: #0f4c2a;
+  background: var(--green-dark);
   padding: 16px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
 }
 
-.headerLeft { display: flex; align-items: center; gap: 10px; }
-.headerLogo { font-size: 24px; }
-.headerTitle { color: white; font-size: 20px; font-weight: 700; }
-.headerRight { display: flex; align-items: center; gap: 16px; }
-.email { color: #a8d5b5; font-size: 14px; }
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoTitle {
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.logoSub {
+  color: #a8d5b5;
+  font-size: 12px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.themeBtn {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.email {
+  color: #a8d5b5;
+  font-size: 14px;
+  font-weight: 500;
+}
 
 .logoutBtn {
   background: transparent;
   border: 1px solid #a8d5b5;
   color: #a8d5b5;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   transition: all .2s;
 }
-.logoutBtn:hover { background: #a8d5b5; color: #0f4c2a; }
 
-.main { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+.logoutBtn:hover {
+  background: #a8d5b5;
+  color: var(--green-dark);
+}
 
-.hero { text-align: center; margin-bottom: 32px; }
-.heroTitle { font-size: 32px; margin: 0 0 8px; color: #0f4c2a; }
-.heroSub { color: #666; font-size: 16px; margin: 0; }
+/* --- ГЛАВНЫЙ КОНТЕЙНЕР --- */
+.main {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 100px 24px;
+  flex: 1;
+}
 
-.card {
-  background: white;
+/* --- ОСНОВНАЯ СЕТКА --- */
+.grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  /* Левая часть с картой чуть шире */
+  gap: 30px;
+  /* Увеличен отступ между колонками */
+  align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+
+  /* На планшетах и ниже ставим блоки друг под друга */
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mapSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.resultSection {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardHeader {
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-align: center;
+  color: #060200
+}
+
+/* --- КАРТА --- */
+.mapWrapper {
+  position: relative;
   border-radius: 16px;
-  padding: 28px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  margin-bottom: 24px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #e8f5e0;
+  height: 350px;
+  /* Немного увеличили высоту карты */
+  width: 100%;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+  url('/map.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; }
-
-.select {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 10px;
-  font-size: 15px;
-  margin-bottom: 16px;
-  outline: none;
+.pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: white;
+  border: 2px solid var(--green);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .2s;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
-.select:focus { border-color: #1a7a42; }
 
-.btn {
-  width: 100%;
-  padding: 14px;
+.pin:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.pinActive {
   background: #1a7a42;
   color: white;
-  border: none;
+  transform: translate(-50%, -50%) scale(1.1);
+  border-color: #0f4c2a;
+  box-shadow: 0 6px 16px rgba(26, 122, 66, 0.4);
+}
+
+.pinActive .pinLabel {
+  color: white;
+}
+
+.pinLabel {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* --- ФОРМА ВВОДА --- */
+.fieldsCard {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 480px) {
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+
+.formGroup label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  margin-bottom: 6px;
+  display: block;
+}
+
+
+.formGroup select,
+.formGroup input {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
   border-radius: 10px;
-  font-size: 16px;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.formGroup select:focus,
+.formGroup input:focus {
+  border-color: var(--green);
+}
+
+.btnPrimary {
+  width: 100%;
+  padding: 14px;
+  color: rgb(54, 49, 49);
+  border-radius: 60px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
-  transition: background .2s;
+  margin-top: 8px;
+  transition: all 0.2s ease;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0.1) 100%), rgba(41, 149, 231, 0.845);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.35),
+    inset 0 2px 2px rgba(255, 255, 255, 0.6),
+    inset 0 -4px 4px rgba(0, 0, 0, 0.1);
 }
-.btn:hover { background: #0f4c2a; }
-.btn:disabled { background: #aaa; cursor: not-allowed; }
 
-.weatherCard {
-  background: white;
+.btnPrimary:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(0, 0, 0, 0.05) 100%), rgba(20, 146, 230, 0.768);
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.45),
+    inset 0 2px 2px rgba(255, 255, 255, 0.8),
+    inset 0 -4px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.btnPrimary:active {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%), rgba(52, 152, 219, 0.4);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    inset 0 3px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(3px);
+}
+/* --- КАРТОЧКИ СТАТИСТИКИ --- */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 20px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
 }
-.weatherCard h3 { margin: 0 0 16px; color: #333; }
 
-.weatherGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.weatherItem { text-align: center; }
-.weatherVal { display: block; font-size: 22px; font-weight: 700; color: #0f4c2a; }
-.weatherLbl { font-size: 12px; color: #888; margin-top: 4px; display: block; }
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
 
+.statCard {
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 14px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--border);
+}
+
+.statIcon {
+  font-size: 20px;
+}
+
+.statVal {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.statLbl {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+/* --- РЕКОМЕНДАЦИЯ --- */
 .recCard {
   border-radius: 16px;
-  padding: 24px;
+  padding: 20px;
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
-.water { background: #e8f4fd; border: 2px solid #3498db; }
-.noWater { background: #eafaf1; border: 2px solid #2ecc71; }
 
-.recIcon { font-size: 36px; }
-.recTitle { margin: 0 0 8px; font-size: 20px; color: #333; }
-.recReason { margin: 0; color: #555; line-height: 1.6; font-size: 15px; }
+.water {
+  background: #e8f4fd;
+  border: 2px solid #3498db;
+}
+
+.noWater {
+  background: #eafaf1;
+  border: 2px solid #2ecc71;
+}
+
+.recIcon {
+  font-size: 36px;
+}
+
+.recTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.recReason {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+.emptyCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  gap: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  padding: 20px;
+  background: rgba(74, 126, 89, 0.48);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* --- SKELETON --- */
+.skeletonWrapper {
+  background: var(--bg2);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--border);
+}
+
+.skeletonHeader {
+  height: 24px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  width: 50%;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.skeletonCard {
+  height: 80px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 12px;
+}
+
+.skeletonText {
+  height: 16px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* --- CHAT WIDGET --- */
+.chatWidget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.chatToggle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.chatToggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.chatBox {
+  width: 360px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chatHeader {
+  background: var(--green-dark);
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.chatHeader button {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.chatMessages {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.chatMsg {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 85%;
+}
+
+.chatBot {
+  background: var(--bg3);
+  color: var(--text);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.chatUser {
+  background: var(--green);
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.typing {
+  font-size: 20px;
+  letter-spacing: 3px;
+  animation: blink 1s infinite;
+  color: var(--text2);
+}
+
+.chatInputRow {
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+}
+
+.chatInput {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.chatInput:focus {
+  border-color: var(--green);
+}
+
+.chatSend {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: opacity .2s, transform .1s;
+}
+
+.chatSend:hover {
+  opacity: 0.9;
+}
+
+.chatSend:active {
+  transform: scale(0.95);
+}
+
+/* --- ГРАФИК ПОГОДЫ --- */
+.forecastRow {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.forecastDay {
+  min-width: 72px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 6px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.forecastDayName {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.forecastIcon {
+  font-size: 20px;
+  margin: 6px 0;
+}
+
+.forecastTemp {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.forecastRain {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 4px;
+}
+
+.mapImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
