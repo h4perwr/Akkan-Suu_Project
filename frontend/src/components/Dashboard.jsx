@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import styles from './Dashboard.module.css'
+import mapImage from './map.jpeg'
 
 const REGIONS = [
   { id: 1, name: 'Чуйская область', x: '42%', y: '22%' },
@@ -36,7 +37,7 @@ export default function Dashboard({ token }) {
 
   const currentToken = token || localStorage.getItem('token')
 
-  const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -54,7 +55,7 @@ export default function Dashboard({ token }) {
     setLoading(true)
     setResult(null)
     try {
-      const res = await fetch(`${BACKEND_API_URL}/api/recommendation`, {
+      const res = await fetch(`${BACKEND_URL}/api/recommendation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +93,7 @@ export default function Dashboard({ token }) {
     setChatLoading(true)
     
     try {
-      const res = await fetch(`${BACKEND_API_URL}/api/ai/chat`, {
+      const res = await fetch(`${BACKEND_URL}/api/ai/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,6 +134,7 @@ export default function Dashboard({ token }) {
           <div className={styles.mapSection}>
             <div className={styles.cardHeader}>🗺 Выберите регион</div>
             <div className={styles.mapWrapper}>
+             <img src={mapImage} alt="map" className={styles.mapImg} />
               {REGIONS.map(r => (
                 <button
                   key={r.id}
