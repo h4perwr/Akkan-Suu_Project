@@ -1,75 +1,76 @@
-:root {
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* 1. Сброс базовых стилей (они должны быть снаружи :root) */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
+/* 2. Твои цветовые переменные (Светлая тема) */
 :root {
   --bg: #f0f7f4;
   --bg2: #ffffff;
   --bg3: #e8f5e9;
   --text: #1a1a1a;
+  --text-h: #1a1a1a;
   --text2: #666666;
   --green: #1a7a42;
   --green-dark: #0f4c2a;
   --green-light: #639922;
   --border: #e0e0e0;
-  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --code-bg: #f3f4f6;
+
+  /* Шрифты */
+  --heading: system-ui, -apple-system, sans-serif;
+  --mono: monospace;
 }
 
+/* 3. Твоя Темная тема (Переключается кнопкой в Dashboard) */
 [data-theme="dark"] {
   --bg: #0f1a12;
   --bg2: #1a2e1e;
   --bg3: #162419;
   --text: #f0f0f0;
+  --text-h: #f3f4f6;
   --text2: #aaaaaa;
   --green: #2ecc71;
   --green-dark: #27ae60;
   --green-light: #82e0aa;
   --border: #2a3f2e;
-  --shadow: 0 4px 20px rgba(0,0,0,0.3);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --code-bg: #1f2028;
 }
 
-body {
+/* 4. Настройки самого документа */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
   background: var(--bg);
   color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
   transition: background 0.3s, color 0.3s;
 }
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-body {
-  margin: 0;
-}
-
+/* 5. ИСПРАВЛЕННЫЙ КОНТЕЙНЕР VITE */
 #root {
-  width: 1126px;
+  width: 100%;
+  /* Убили жесткое ограничение в 1126px */
   max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
+  margin: 0;
+  /* Убили margin: 0 auto */
+  padding: 0;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  text-align: left;
+  /* Убили text-align: center, чтобы верстка не ехала */
+  /* border-inline удален, чтобы не было линий по бокам */
 }
 
+/* --- Типографика и базовые элементы --- */
 h1,
 h2 {
   font-family: var(--heading);
@@ -81,20 +82,28 @@ h1 {
   font-size: 56px;
   letter-spacing: -1.68px;
   margin: 32px 0;
-  @media (max-width: 1024px) {
+}
+
+@media (max-width: 1024px) {
+  h1 {
     font-size: 36px;
     margin: 20px 0;
   }
 }
+
 h2 {
   font-size: 24px;
   line-height: 118%;
   letter-spacing: -0.24px;
   margin: 0 0 8px;
-  @media (max-width: 1024px) {
+}
+
+@media (max-width: 1024px) {
+  h2 {
     font-size: 20px;
   }
 }
+
 p {
   margin: 0;
 }
