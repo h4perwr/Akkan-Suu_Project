@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import styles from './Dashboard.module.css'
-import mapImage from './map.jpeg'
 
 const REGIONS = [
   { id: 1, name: 'Чуйская область', x: '42%', y: '22%' },
