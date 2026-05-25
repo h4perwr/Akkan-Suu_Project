@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import styles from './Dashboard.module.css'
-import mapImage from './map.jpeg'
+
 
 const REGIONS = [
   { id: 1, name: 'Чуйская область', x: '42%', y: '22%' },
@@ -134,7 +134,6 @@ export default function Dashboard({ token }) {
           <div className={styles.mapSection}>
             <div className={styles.cardHeader}>🗺 Выберите регион</div>
             <div className={styles.mapWrapper}>
-             <img src={mapImage} alt="map" className={styles.mapImg} />
               {REGIONS.map(r => (
                 <button
                   key={r.id}
