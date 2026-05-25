@@ -127,9 +127,8 @@ export default function Dashboard({ token }) {
         <div className={styles.grid}>
 
           <div className={styles.mapSection}>
-            <div className={styles.cardHeader}>🗺 Выберите регион</div>
+            <div className={styles.cardHeader}>Выберите регион</div>
             <div className={styles.mapWrapper}>
-             <img src="/map.png" alt="map" className={styles.mapImg} />
               {REGIONS.map(r => (
                 <button
                   key={r.id}

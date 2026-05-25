@@ -1,3 +1,5 @@
+
+
 .wrapper {
   min-height: 100vh;
   background: var(--bg);
@@ -6,6 +8,12 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+  url('/field.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 /* --- ХЕДЕР --- */
@@ -104,21 +112,20 @@
 }
 
 .resultSection {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  background: var(--bg2);
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  padding: 24px;
-  min-height: 400px;
 }
 
 .cardHeader {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 600;
   margin-bottom: 12px;
   text-align: center;
+  color: #060200
 }
 
 /* --- КАРТА --- */
@@ -131,6 +138,11 @@
   height: 350px;
   /* Немного увеличили высоту карты */
   width: 100%;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+  url('/map.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .pin {
@@ -173,23 +185,27 @@
 
 /* --- ФОРМА ВВОДА --- */
 .fieldsCard {
-  background: var(--bg2);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 16px;
-  padding: 24px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .formRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  /* Увеличили отступы между инпутами */
   margin-bottom: 16px;
 }
 
 @media (max-width: 480px) {
 
-  /* На мобильных инпуты встанут в одну колонку */
   .formRow {
     grid-template-columns: 1fr;
   }
@@ -201,11 +217,17 @@
   gap: 6px;
 }
 
+
+
 .formGroup label {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--text2);
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  margin-bottom: 6px;
+  display: block;
 }
+
 
 .formGroup select,
 .formGroup input {
@@ -227,25 +249,38 @@
 .btnPrimary {
   width: 100%;
   padding: 14px;
-  background: var(--green);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
+  color: rgb(54, 49, 49);
+  border-radius: 60px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity .2s, transform .1s;
   margin-top: 8px;
+  transition: all 0.2s ease;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0.1) 100%), rgba(41, 149, 231, 0.845);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.35),
+    inset 0 2px 2px rgba(255, 255, 255, 0.6),
+    inset 0 -4px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btnPrimary:hover {
-  opacity: 0.9;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(0, 0, 0, 0.05) 100%), rgba(20, 146, 230, 0.768);
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.45),
+    inset 0 2px 2px rgba(255, 255, 255, 0.8),
+    inset 0 -4px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .btnPrimary:active {
-  transform: translateY(2px);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%), rgba(52, 152, 219, 0.4);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    inset 0 3px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(3px);
 }
-
 /* --- КАРТОЧКИ СТАТИСТИКИ --- */
 .card {
   background: var(--bg2);
@@ -329,12 +364,19 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: var(--text2);
   text-align: center;
   gap: 16px;
   font-size: 15px;
   line-height: 1.6;
   padding: 20px;
+  background: rgba(74, 126, 89, 0.48);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 /* --- SKELETON --- */
