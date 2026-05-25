@@ -36,6 +36,8 @@ export default function Dashboard({ token }) {
 
   const currentToken = token || localStorage.getItem('token')
 
+  const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
@@ -52,7 +54,7 @@ export default function Dashboard({ token }) {
     setLoading(true)
     setResult(null)
     try {
-      const res = await fetch('http://localhost:8000/api/recommendation', {
+      const res = await fetch(`${BACKEND_API_URL}/api/recommendation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +92,7 @@ export default function Dashboard({ token }) {
     setChatLoading(true)
     
     try {
-      const res = await fetch('http://localhost:8000/api/ai/chat', {
+      const res = await fetch(`${BACKEND_API_URL}/api/ai/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
